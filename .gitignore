@@ -1,0 +1,4 @@
+dataset/
+IRMAS.pickle
+*.pyc
+.idea/
