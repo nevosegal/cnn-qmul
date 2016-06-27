@@ -3,6 +3,7 @@
 from project import initialise_dataset
 import tensorflow as tf
 import numpy as np
+from BatchNormalizer import BatchNormalizer
 
 
 data = initialise_dataset()
@@ -33,7 +34,8 @@ for i, one_hot in enumerate(train_one_hot):
 # input
 x = tf.placeholder(tf.float32)
 x_tensor = tf.reshape(x, [-1, 128, 130, 1])
-
+bn = BatchNormalizer(1, 0.001, True)
+x_tensor_normalized = bn.normalize(x_tensor)
 # ground-truth output
 y_ = tf.placeholder(tf.float32)
 
@@ -42,7 +44,7 @@ w_conv1 = tf.Variable(tf.truncated_normal([5, 5, 1, 32], stddev=0.1))
 b_conv1 = tf.Variable(tf.constant(0.1, shape=[32]))
 
 # apply the convolution
-conv1 = tf.nn.conv2d(x_tensor, w_conv1, strides=[1, 1, 1, 1], padding="SAME")
+conv1 = tf.nn.conv2d(x_tensor_normalized, w_conv1, strides=[1, 1, 1, 1], padding="SAME")
 
 # input to ReLU is w*x + b
 h_conv1 = tf.nn.relu(conv1 + b_conv1)
@@ -56,7 +58,6 @@ conv2 = tf.nn.conv2d(h_pool1, w_conv2, strides=[1, 1, 1, 1], padding="SAME")
 
 h_conv2 = tf.nn.relu(conv2 + b_conv2)
 h_pool2 = tf.nn.max_pool(h_conv2, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
-
 
 # hidden layer 3
 w_conv3 = tf.Variable(tf.truncated_normal([5, 5, 64, 128], stddev=0.1))
@@ -96,11 +97,12 @@ sess = tf.InteractiveSession()
 
 sess.run(tf.initialize_all_variables())
 
-batch_size = 128
+batch_size = 55
 
 for i in range(len(train_labels)/batch_size):
     spectro_batch = train_spectros[i*batch_size:(i*batch_size)+batch_size]
     one_hot_batch = train_one_hot[i*batch_size:(i*batch_size)+batch_size]
+
     train_accuracy = accuracy.eval(feed_dict={x: spectro_batch, y_: one_hot_batch, keep_prob: 1.0})
 
     print('step %d, training accuracy %g' % (i, train_accuracy))
