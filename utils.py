@@ -153,19 +153,19 @@ def pickle_dataset(folders):
 
 def initialise_dataset():
     pickle_file = 'IRMAS.pickle'
-    # populate array with full path of each instrument folder
-    train_data_folders = [
-        training_root + folder for folder in os.listdir(training_root)
-        if os.path.isdir(os.path.join(training_root, folder))
-    ]
-
-    # populate array with full path of each instrument folder
-    test_data_folders = [
-        testing_root + folder for folder in os.listdir(testing_root)
-        if os.path.isdir(os.path.join(testing_root, folder))
-    ]
 
     if not os.path.exists(pickle_file):
+        # populate array with full path of each instrument folder
+        train_data_folders = [
+            training_root + folder for folder in os.listdir(training_root)
+            if os.path.isdir(os.path.join(training_root, folder))
+            ]
+
+        # populate array with full path of each instrument folder
+        test_data_folders = [
+            testing_root + folder for folder in os.listdir(testing_root)
+            if os.path.isdir(os.path.join(testing_root, folder))
+            ]
 
         # pickle datasets by instrument
         print("Pickling train datasets")
@@ -193,23 +193,21 @@ def initialise_dataset():
 
         # create a pickle of the merged datasets
         try:
-            if not os.path.exists(pickle_file):
-                with open(pickle_file, 'wb') as f:
-                    contents = {
-                        'train_spectros': train_spec_mat,
-                        'train_dataset': train_dataset,
-                        'train_labels': train_labels,
-                        'test_spectros': test_spec_mat,
-                        'test_dataset': test_dataset,
-                        'test_labels': test_labels,
-                        'valid_spectros': valid_spec_mat,
-                        'valid_dataset': valid_dataset,
-                        'valid_labels': valid_labels,
-                    }
+            with open(pickle_file, 'wb') as f:
+                contents = {
+                    'train_spectros': train_spec_mat,
+                    'train_dataset': train_dataset,
+                    'train_labels': train_labels,
+                    'test_spectros': test_spec_mat,
+                    'test_dataset': test_dataset,
+                    'test_labels': test_labels,
+                    'valid_spectros': valid_spec_mat,
+                    'valid_dataset': valid_dataset,
+                    'valid_labels': valid_labels,
+                    'num_classes': len(train_data_folders)
+                }
 
-                    pickle.dump(contents, f, pickle.HIGHEST_PROTOCOL)
-            else:
-                print('%s already exists.. Aborting pickling' % pickle_file)
+                pickle.dump(contents, f, pickle.HIGHEST_PROTOCOL)
 
         except Exception as e:
             print("Unable to write to file", pickle_file, ":", e)
@@ -225,7 +223,7 @@ def initialise_dataset():
                 'test_labels': all_data["test_labels"],
                 'valid_spec_mat': all_data["valid_spectros"],
                 'valid_labels': all_data["valid_labels"],
-                'num_classes': len(train_data_folders)
+                'num_classes': all_data["num_classes"]
             }
 
     except Exception as e:
