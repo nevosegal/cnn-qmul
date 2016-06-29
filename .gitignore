@@ -2,3 +2,4 @@ dataset/
 IRMAS.pickle
 *.pyc
 .idea/
+cnn.pem

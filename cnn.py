@@ -23,7 +23,6 @@ def generate_one_hot(labels):
         oh[label_ix] = 1
     return one_hot
 
-train_one_hot = generate_one_hot(train_labels)
 test_one_hot = generate_one_hot(test_labels)
 
 # example plotting spectrograms
@@ -104,10 +103,11 @@ sess.run(tf.initialize_all_variables())
 
 
 batch_size = 55
-epochs = 10
+epochs = 15
 for j in range(epochs):
     train_spectros, train_labels = randomize(train_spectros, train_labels)
-    print("Batch number: %d" % j)
+    train_one_hot = generate_one_hot(train_labels)
+    print("Epoch number: %d" % j)
     for i in range(len(train_labels)/batch_size):
         spectro_batch = train_spectros[i*batch_size:(i*batch_size)+batch_size]
         one_hot_batch = train_one_hot[i*batch_size:(i*batch_size)+batch_size]
