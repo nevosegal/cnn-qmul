@@ -103,7 +103,7 @@ sess.run(tf.initialize_all_variables())
 
 
 batch_size = 55
-epochs = 15
+epochs = 60
 for j in range(epochs):
     train_spectros, train_labels = randomize(train_spectros, train_labels)
     train_one_hot = generate_one_hot(train_labels)
@@ -119,4 +119,4 @@ for j in range(epochs):
 
 
 test_accuracy = accuracy.eval(feed_dict={x: test_spectros, y_: test_one_hot, keep_prob: 1.0})
-print("Test accuracy %d" % test_accuracy)
+print("Test accuracy %g" % test_accuracy)
