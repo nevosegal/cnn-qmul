@@ -3,3 +3,4 @@ IRMAS.pickle
 *.pyc
 .idea/
 cnn.pem
+MedleyDB/

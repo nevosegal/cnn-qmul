@@ -114,7 +114,7 @@ for j in range(epochs):
 
         train_accuracy = accuracy.eval(feed_dict={x: spectro_batch, y_: one_hot_batch, keep_prob: 1.0})
 
-        print('step %d, training accuracy %g' % (i, train_accuracy))
+        print('mini batch %d, training accuracy %g' % (i, train_accuracy))
         train_step.run(feed_dict={x: spectro_batch, y_: one_hot_batch, keep_prob: 0.5})
 
 
