@@ -10,6 +10,8 @@ try:
 except ImportError:
     import pickle
 
+import h5py
+
 training_root = 'dataset/IRMAS-TrainingData/'
 testing_root = 'dataset/IRMAS-TestingData/'
 sr = 22050
@@ -80,9 +82,9 @@ def randomize(dataset, labels):
 def compute_spectrogram(signal):
     global sr
     spec = lr.feature.melspectrogram(signal, sr=sr, n_mels=128)
-    # log_spec = lr.logamplitude(spec, ref_power=np.max)
+    log_spec = lr.logamplitude(spec, ref_power=np.max)
 
-    return spec
+    return log_spec
 
 
 def generate_spec_mat(dataset, num_spec):
@@ -152,7 +154,8 @@ def pickle_dataset(folders):
 
 
 def initialise_dataset():
-    pickle_file = 'IRMAS.pickle'
+    pickle_file = 'dataset.h5'
+    contents = {}
 
     if not os.path.exists(pickle_file):
         # populate array with full path of each instrument folder
@@ -173,7 +176,7 @@ def initialise_dataset():
         print("Pickling train datasets")
         test_datasets = pickle_dataset(test_data_folders)
 
-        num_train, num_test, num_valid = 3630, 440, 165
+        num_train, num_test, num_valid = 8450, 1300, 260
         # merge them to one big dataset
         valid_dataset, valid_labels, train_dataset, train_labels = merge_datasets(train_datasets, num_train, num_valid)
         _, _, test_dataset, test_labels = merge_datasets(test_datasets, num_test)
@@ -193,7 +196,7 @@ def initialise_dataset():
 
         # create a pickle of the merged datasets
         try:
-            with open(pickle_file, 'wb') as f:
+            with h5py.File(pickle_file, 'w') as f:
                 contents = {
                     'train_spectros': train_spec_mat,
                     'train_dataset': train_dataset,
@@ -204,27 +207,22 @@ def initialise_dataset():
                     'valid_spectros': valid_spec_mat,
                     'valid_dataset': valid_dataset,
                     'valid_labels': valid_labels,
-                    'num_classes': len(train_data_folders)
+                    'num_classes': [len(train_data_folders)]
                 }
 
-                pickle.dump(contents, f, pickle.HIGHEST_PROTOCOL)
+                for key, val in contents.iteritems():
+                    # pickle.dump(contents, f, pickle.HIGHEST_PROTOCOL)
+                    f.create_dataset(key, data=val, compression="gzip")
 
         except Exception as e:
             print("Unable to write to file", pickle_file, ":", e)
             raise
 
+    # contents = {}
     try:
-        with open(pickle_file, 'rb') as f:
-            all_data = pickle.load(f)
-            contents = {
-                'train_spec_mat': all_data["train_spectros"],
-                'train_labels': all_data["train_labels"],
-                'test_spec_mat': all_data["test_spectros"],
-                'test_labels': all_data["test_labels"],
-                'valid_spec_mat': all_data["valid_spectros"],
-                'valid_labels': all_data["valid_labels"],
-                'num_classes': all_data["num_classes"]
-            }
+        with h5py.File(pickle_file, 'r') as f:
+            for key in f.keys():
+                contents[key] = np.array(f.get(key))
 
     except Exception as e:
         print("Unable to read file", pickle_file, ":", e)

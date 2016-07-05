@@ -1,5 +1,5 @@
 dataset/
-IRMAS.pickle
+dataset.h5
 *.pyc
 .idea/
 cnn.pem

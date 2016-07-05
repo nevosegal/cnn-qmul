@@ -4,14 +4,17 @@ from utils import initialise_dataset, randomize
 import tensorflow as tf
 import numpy as np
 from BatchNormalizer import BatchNormalizer
+import librosa as lr
+
+import matplotlib.pyplot as plt
 
 
 data = initialise_dataset()
-train_spectros = data['train_spec_mat']
+train_spectros = data['train_spectros']
 train_labels = data['train_labels']
-test_spectros = data['test_spec_mat']
+test_spectros = data['test_spectros']
 test_labels = data['test_labels']
-valid_spectros = data['valid_spec_mat']
+valid_spectros = data['valid_spectros']
 valid_labels = data['valid_labels']
 num_classes = data['num_classes']
 
@@ -26,8 +29,8 @@ def generate_one_hot(labels):
 test_one_hot = generate_one_hot(test_labels)
 
 # example plotting spectrograms
-# lr.display.specshow(data['train_spec_mat'][110], x_axis='time', y_axis='mel')
-# plt.title(str(data['train_labels'][110]))
+# lr.display.specshow(train_spectros[222], x_axis='time', y_axis='mel')
+# plt.title(str(train_labels[222]))
 # plt.show()
 
 # Convolutional Neural Network
@@ -83,8 +86,8 @@ h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, w_fc1) + b_fc1)
 keep_prob = tf.placeholder(tf.float32)
 h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-w_fc2 = tf.Variable(tf.truncated_normal([1024, 11], stddev=0.1))
-b_fc2 = tf.Variable(tf.constant(0.1, shape=[11]))
+w_fc2 = tf.Variable(tf.truncated_normal([1024, 13], stddev=0.1))
+b_fc2 = tf.Variable(tf.constant(0.1, shape=[13]))
 
 # the result
 y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, w_fc2) + b_fc2)
