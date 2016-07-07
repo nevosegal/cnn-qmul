@@ -82,9 +82,9 @@ def randomize(dataset, labels):
 def compute_spectrogram(signal):
     global sr
     spec = lr.feature.melspectrogram(signal, sr=sr, n_mels=128)
-    log_spec = lr.logamplitude(spec, ref_power=np.max)
+    # log_spec = lr.logamplitude(spec, ref_power=np.max)
 
-    return log_spec
+    return spec
 
 
 def generate_spec_mat(dataset, num_spec):
@@ -154,10 +154,10 @@ def pickle_dataset(folders):
 
 
 def initialise_dataset():
-    pickle_file = 'dataset.h5'
+    hdf5_file = 'dataset.h5'
     contents = {}
 
-    if not os.path.exists(pickle_file):
+    if not os.path.exists(hdf5_file):
         # populate array with full path of each instrument folder
         train_data_folders = [
             training_root + folder for folder in os.listdir(training_root)
@@ -196,7 +196,7 @@ def initialise_dataset():
 
         # create a pickle of the merged datasets
         try:
-            with h5py.File(pickle_file, 'w') as f:
+            with h5py.File(hdf5_file, 'w') as f:
                 contents = {
                     'train_spectros': train_spec_mat,
                     'train_dataset': train_dataset,
@@ -212,20 +212,20 @@ def initialise_dataset():
 
                 for key, val in contents.iteritems():
                     # pickle.dump(contents, f, pickle.HIGHEST_PROTOCOL)
-                    f.create_dataset(key, data=val, compression="gzip")
+                    f.create_dataset(key, data=val)
 
         except Exception as e:
-            print("Unable to write to file", pickle_file, ":", e)
+            print("Unable to write to file", hdf5_file, ":", e)
             raise
 
     # contents = {}
     try:
-        with h5py.File(pickle_file, 'r') as f:
+        with h5py.File(hdf5_file, 'r') as f:
             for key in f.keys():
                 contents[key] = np.array(f.get(key))
 
     except Exception as e:
-        print("Unable to read file", pickle_file, ":", e)
+        print("Unable to read file", hdf5_file, ":", e)
         raise
 
     return contents
