@@ -106,7 +106,7 @@ sess.run(tf.initialize_all_variables())
 
 
 train_batch_size = 64
-epochs = 60
+epochs = 20
 for j in range(epochs):
     train_spectros, train_labels = randomize(train_spectros, train_labels)
     train_one_hot = generate_one_hot(train_labels)
@@ -120,8 +120,8 @@ for j in range(epochs):
         print('mini batch %d, training accuracy %g' % (i, train_accuracy))
         train_step.run(feed_dict={x: train_sepctro_batch, y_: train_one_hot_batch, keep_prob: 0.5})
 
-test_batch_size = 128
-for i in range(len(test_labels)):
+test_batch_size = 64
+for i in range(len(test_labels)/test_batch_size):
     test_spectro_batch = test_spectros[i*test_batch_size:(i*test_batch_size)+test_batch_size]
     test_one_hot_batch = test_one_hot[i*test_batch_size:(i*test_batch_size)+test_batch_size]    
     test_accuracy = accuracy.eval(feed_dict={x: test_spectro_batch, y_: test_one_hot_batch, keep_prob: 1.0})
