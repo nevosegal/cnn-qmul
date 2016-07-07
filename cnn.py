@@ -105,21 +105,24 @@ sess = tf.InteractiveSession()
 sess.run(tf.initialize_all_variables())
 
 
-batch_size = 55
+train_batch_size = 64
 epochs = 60
 for j in range(epochs):
     train_spectros, train_labels = randomize(train_spectros, train_labels)
     train_one_hot = generate_one_hot(train_labels)
     print("Epoch number: %d" % j)
-    for i in range(len(train_labels)/batch_size):
-        spectro_batch = train_spectros[i*batch_size:(i*batch_size)+batch_size]
-        one_hot_batch = train_one_hot[i*batch_size:(i*batch_size)+batch_size]
+    for i in range(len(train_labels)/train_batch_size):
+        train_sepctro_batch = train_spectros[i*train_batch_size:(i*train_batch_size)+train_batch_size]
+        train_one_hot_batch = train_one_hot[i*train_batch_size:(i*train_batch_size)+train_batch_size]
 
-        train_accuracy = accuracy.eval(feed_dict={x: spectro_batch, y_: one_hot_batch, keep_prob: 1.0})
+        train_accuracy = accuracy.eval(feed_dict={x: train_sepctro_batch, y_: train_one_hot_batch, keep_prob: 1.0})
 
         print('mini batch %d, training accuracy %g' % (i, train_accuracy))
-        train_step.run(feed_dict={x: spectro_batch, y_: one_hot_batch, keep_prob: 0.5})
+        train_step.run(feed_dict={x: train_sepctro_batch, y_: train_one_hot_batch, keep_prob: 0.5})
 
-
-test_accuracy = accuracy.eval(feed_dict={x: test_spectros, y_: test_one_hot, keep_prob: 1.0})
-print("Test accuracy %g" % test_accuracy)
+test_batch_size = 128
+for i in range(len(test_labels)):
+    test_spectro_batch = test_spectros[i*test_batch_size:(i*test_batch_size)+test_batch_size]
+    test_one_hot_batch = test_one_hot[i*test_batch_size:(i*test_batch_size)+test_batch_size]    
+    test_accuracy = accuracy.eval(feed_dict={x: test_spectro_batch, y_: test_one_hot_batch, keep_prob: 1.0})
+    print("Test accuracy %g" % test_accuracy)
