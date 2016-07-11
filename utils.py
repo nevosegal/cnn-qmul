@@ -97,8 +97,8 @@ def generate_spec_mat(dataset, num_spec):
 
 def read_instrument(instrument_folder):
 
-    # list of files in folder
-    file_list = os.listdir(instrument_folder)
+    # list of files in folder, ignoring hidden ones
+    file_list = [f for f in os.listdir(instrument_folder) if not f.startswith('.')]
 
     # create dataset list in advance
     dataset = np.ndarray(shape=(len(file_list), file_length), dtype=np.float32)
@@ -109,7 +109,7 @@ def read_instrument(instrument_folder):
         full_path = os.path.join(instrument_folder, file_name)
         try:
             # read audio data
-            audio_file, sr = lr.load(full_path)
+            audio_file, sr = lr.core.load(full_path)
 
             # if it is not 3 seconds long as expected, raise an error.
             if len(audio_file) != file_length:
@@ -176,7 +176,7 @@ def initialise_dataset():
         print("Pickling train datasets")
         test_datasets = pickle_dataset(test_data_folders)
 
-        num_train, num_test, num_valid = 8450, 1300, 260
+        num_train, num_test, num_valid = 14088, 1560, 300
         # merge them to one big dataset
         valid_dataset, valid_labels, train_dataset, train_labels = merge_datasets(train_datasets, num_train, num_valid)
         _, _, test_dataset, test_labels = merge_datasets(test_datasets, num_test)

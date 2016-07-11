@@ -86,8 +86,8 @@ h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, w_fc1) + b_fc1)
 keep_prob = tf.placeholder(tf.float32)
 h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-w_fc2 = tf.Variable(tf.truncated_normal([1024, 13], stddev=0.1))
-b_fc2 = tf.Variable(tf.constant(0.1, shape=[13]))
+w_fc2 = tf.Variable(tf.truncated_normal([1024, 12], stddev=0.1))
+b_fc2 = tf.Variable(tf.constant(0.1, shape=[12]))
 
 # the result
 y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, w_fc2) + b_fc2)

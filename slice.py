@@ -1,6 +1,8 @@
 import os, librosa
 import numpy as np
 
+threshold = 0.01
+
 input_path = '/Users/nevosegal/Development/datasets/junglevibe2net/'
 
 # get all folders/classes
@@ -28,6 +30,11 @@ for file in input_files:
 			# remove extension from file name
 			file_name = path[1].rsplit(".",1)[0]
 			chunk_name = path[0] + "/sliced/" + file_name + "_%d.wav" % n
-			print("writing %s... %d/%d.wav" % (chunk_name, ix+1, num_slices))
-			# write new chunks
-			librosa.output.write_wav(chunk_name, chunk, sr)
+
+			chunk_rms = np.mean(librosa.feature.rmse(chunk))
+			if chunk_rms > threshold:
+				# write new chunks
+				print("writing %s... %d/%d.wav" % (chunk_name, ix+1, num_slices))
+				librosa.output.write_wav(chunk_name, chunk, sr)
+			else:
+				print("not enough instrumental data in this snippet of audio %s" % chunk_name)
