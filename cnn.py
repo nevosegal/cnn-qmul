@@ -67,20 +67,20 @@ h_conv2 = tf.nn.relu(conv2 + b_conv2)
 h_pool2 = tf.nn.max_pool(h_conv2, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
 
 # # hidden layer 3
-# w_conv3 = tf.Variable(tf.truncated_normal([3, 3, 64, 128], stddev=0.1))
-# b_conv3 = tf.Variable(tf.constant(0.1, shape=[128]))
-#
-# conv3 = tf.nn.conv2d(h_pool2, w_conv3, strides=[1, 1, 1, 1], padding="SAME")
-#
-# h_conv3 = tf.nn.relu(conv3 + b_conv3)
-# h_pool3 = tf.nn.max_pool(h_conv3, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
+w_conv3 = tf.Variable(tf.truncated_normal([3, 3, 64, 128], stddev=0.1))
+b_conv3 = tf.Variable(tf.constant(0.1, shape=[128]))
+
+conv3 = tf.nn.conv2d(h_pool2, w_conv3, strides=[1, 1, 1, 1], padding="SAME")
+
+h_conv3 = tf.nn.relu(conv3 + b_conv3)
+h_pool3 = tf.nn.max_pool(h_conv3, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
 
 
 # fully connected layer
-w_fc1 = tf.Variable(tf.truncated_normal([33 * 32 * 64, 1024], stddev=0.1))
+w_fc1 = tf.Variable(tf.truncated_normal([16 * 17 * 128, 1024], stddev=0.1))
 b_fc1 = tf.Variable(tf.constant(0.1, shape=[1024]))
 
-h_pool3_flat = tf.reshape(h_pool2, [-1, 33 * 32 * 64])
+h_pool3_flat = tf.reshape(h_pool3, [-1, 16 * 17 * 128])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool3_flat, w_fc1) + b_fc1)
 
 keep_prob = tf.placeholder(tf.float32)
@@ -106,7 +106,7 @@ sess.run(tf.initialize_all_variables())
 
 
 train_batch_size = 64
-epochs = 20
+epochs = 30
 for j in range(epochs):
     train_spectros, train_labels = randomize(train_spectros, train_labels)
     train_one_hot = generate_one_hot(train_labels)
@@ -120,7 +120,7 @@ for j in range(epochs):
         print('mini batch %d, training accuracy %g' % (i, train_accuracy))
         train_step.run(feed_dict={x: train_sepctro_batch, y_: train_one_hot_batch, keep_prob: 0.5})
 
-test_batch_size = 64
+test_batch_size = 52
 for i in range(len(test_labels)/test_batch_size):
     test_spectro_batch = test_spectros[i*test_batch_size:(i*test_batch_size)+test_batch_size]
     test_one_hot_batch = test_one_hot[i*test_batch_size:(i*test_batch_size)+test_batch_size]    

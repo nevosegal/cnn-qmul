@@ -3,5 +3,4 @@ dataset/
 dataset.h5
 *.pyc
 .idea/
-cnn.pem
 MedleyDB/
