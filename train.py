@@ -8,7 +8,7 @@ from dataloader import DataLoader
 import utils
 
 train_batch_size = 64
-dataloader = DataLoader('/Users/nevosegal/Development/qmul/dataset.h5', train_batch_size)
+dataloader = DataLoader('dataset.h5', train_batch_size)
 
 model = Model(train_batch_size)
 
