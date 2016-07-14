@@ -7,9 +7,9 @@ from BatchNormalizer import BatchNormalizer
 
 class Model():
 
-	def __init__(self, args):
+	def __init__(self, batch_size):
 
-		self.input_size = args['batch_size']
+		self.input_size = batch_size
 		self.bn = BatchNormalizer(1, 0.001, True)
 
 		# building the graph

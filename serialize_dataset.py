@@ -71,13 +71,6 @@ def merge_datasets(pickle_files, num_training, num_validation = 0):
     return validation_dataset, validation_labels, training_dataset, training_labels
 
 
-def randomize(dataset, labels):
-    permutation = np.random.permutation(labels.shape[0])
-    shuffled_dataset = dataset[permutation, :]
-    shuffled_labels = labels[permutation]
-
-    return shuffled_dataset, shuffled_labels
-
 # function to compute the mel spectrogram
 def compute_spectrogram(signal):
     global sr
@@ -218,7 +211,6 @@ def initialise_dataset():
             print("Unable to write to file", hdf5_file, ":", e)
             raise
 
-    # contents = {}
     try:
         with h5py.File(hdf5_file, 'r') as f:
             for key in f.keys():
