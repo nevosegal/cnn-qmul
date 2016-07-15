@@ -1,6 +1,3 @@
-# Constructing the CNN
-
-# from utils import initialise_dataset, randomize
 import numpy as np
 from model import Model
 import tensorflow as tf
