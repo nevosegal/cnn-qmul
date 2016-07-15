@@ -3,17 +3,33 @@ from model import Model
 import tensorflow as tf
 from dataloader import DataLoader
 import utils, os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--overwrite', dest='overwrite', action='store_true', help='overwrites existing model')
+parser.add_argument('--no-overwrite', dest='overwrite', action='store_false', help='continues training based on existing model')
+parser.set_defaults(overwrite=False)
+
+args = parser.parse_args()
 
 train_batch_size = 64
-dataloader = DataLoader('dataset.h5', train_batch_size)
+checkpoint_file = 'checkpoints/model.ckpt'
+# dataloader = DataLoader('dataset.h5', train_batch_size)
 
 model = Model(train_batch_size)
 
 sess = tf.InteractiveSession()
-sess.run(tf.initialize_all_variables())
-
 saver = tf.train.Saver()
 
+if not args.overwrite and os.path.isfile(checkpoint_file):
+    print("Restoring model...")
+    saver.restore(sess, checkpoint_file)
+    print("Successfully restored model!")
+else:
+    sess.run(tf.initialize_all_variables())
+    print("Training on random initial values...")
+
+print("Starting training:")
 epochs = 30
 for j in range(epochs):
     dataloader.reset_read_pointer()
@@ -31,5 +47,5 @@ for j in range(epochs):
 
 if not os.path.exists('checkpoints'):
     os.makedirs('checkpoints')
-saver.save(sess, 'checkpoints/model.ckpt')
-print("Model saved to checkpoints/model.ckpt")
+saver.save(sess, checkpoint_file)
+print("Model saved to %s" % checkpoint_file)

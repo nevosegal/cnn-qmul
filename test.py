@@ -18,6 +18,8 @@ saver = tf.train.Saver()
 if os.path.isfile('checkpoints/model.ckpt'):
     saver.restore(sess, 'checkpoints/model.ckpt')
     print("Model restored!")
+else:
+    sess.run(tf.initialize_all_variables())
 
 dataloader.reset_read_pointer()
 dataloader.randomize()
