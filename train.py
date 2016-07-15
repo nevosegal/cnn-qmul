@@ -17,6 +17,7 @@ sess.run(tf.initialize_all_variables())
 
 epochs = 30
 for j in range(epochs):
+    dataloader.reset_read_pointer()
     dataloader.randomize()
     dataset_size = dataloader.get_data_size()
     print dataset_size
