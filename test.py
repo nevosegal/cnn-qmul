@@ -24,7 +24,7 @@ dataloader.randomize()
 dataset_size = dataloader.get_data_size()
 print dataset_size
 
-for i in range(5):
+for i in range(dataset_size // dataloader.get_batch_size()):
     test_spectro_batch, test_labels_batch = dataloader.load_next_batch()
     test_one_hot_batch = utils.generate_one_hot(test_labels_batch, dataloader.get_num_classes())
     test_accuracy = model.accuracy.eval(feed_dict={model.x: test_spectro_batch, model.y_: test_one_hot_batch, model.keep_prob: 1.0})
