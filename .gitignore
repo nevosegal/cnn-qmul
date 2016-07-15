@@ -3,4 +3,4 @@ dataset/
 dataset.h5
 *.pyc
 .idea/
-MedleyDB/
+checkpoints/

@@ -25,8 +25,8 @@ class Model():
 		self.y_ = tf.placeholder(tf.float32)
 
 		# weights and biases from input to hidden layer 1
-		self.weights_conv1 = tf.Variable(tf.truncated_normal([3, 3, 1, 64], stddev=0.1))
-		self.bias_conv1 = tf.Variable(tf.constant(0.1, shape=[64]))
+		self.weights_conv1 = tf.Variable(tf.truncated_normal([3, 3, 1, 64], stddev=0.1), name="weights_conv1")
+		self.bias_conv1 = tf.Variable(tf.constant(0.1, shape=[64]), name="bias_conv1")
 
 		# apply the first convolutional layer, moving in steps of 1 in each direction
 		self.conv1 = tf.nn.conv2d(self.x_tensor_normalized, self.weights_conv1, strides=[1, 1, 1, 1], padding="SAME")
@@ -41,8 +41,8 @@ class Model():
 
 
 		# hidden layer 2
-		self.weights_conv2 = tf.Variable(tf.truncated_normal([3, 3, 64, 64], stddev=0.1))
-		self.bias_conv2 = tf.Variable(tf.constant(0.1, shape=[64]))
+		self.weights_conv2 = tf.Variable(tf.truncated_normal([3, 3, 64, 64], stddev=0.1), name="weights_conv2")
+		self.bias_conv2 = tf.Variable(tf.constant(0.1, shape=[64]), name="bias_conv2")
 
 		self.conv2 = tf.nn.conv2d(self.output_conv1, self.weights_conv2, strides=[1, 1, 1, 1], padding="SAME")
 
@@ -53,8 +53,8 @@ class Model():
 
 
 		# hidden layer 3
-		self.weights_conv3 = tf.Variable(tf.truncated_normal([3, 3, 64, 64], stddev=0.1))
-		self.bias_conv3 = tf.Variable(tf.constant(0.1, shape=[64]))
+		self.weights_conv3 = tf.Variable(tf.truncated_normal([3, 3, 64, 64], stddev=0.1), name="weights_conv3")
+		self.bias_conv3 = tf.Variable(tf.constant(0.1, shape=[64]), name="bias_conv3")
 
 		self.conv3 = tf.nn.conv2d(self.output_conv2, self.weights_conv3, strides=[1, 1, 1, 1], padding="SAME")
 
@@ -65,8 +65,8 @@ class Model():
 
 
 		# hidden layer 4
-		self.weights_conv4 = tf.Variable(tf.truncated_normal([3, 3, 64, 64], stddev=0.1))
-		self.bias_conv4 = tf.Variable(tf.constant(0.1, shape=[64]))
+		self.weights_conv4 = tf.Variable(tf.truncated_normal([3, 3, 64, 64], stddev=0.1), name="weights_conv4")
+		self.bias_conv4 = tf.Variable(tf.constant(0.1, shape=[64]), name="bias_conv4")
 
 		self.conv4 = tf.nn.conv2d(self.output_conv3, self.weights_conv4, strides=[1, 1, 1, 1], padding="SAME")
 
@@ -77,8 +77,8 @@ class Model():
 
 		
 		# first fully connected layer
-		self.weights_fc1 = tf.Variable(tf.truncated_normal([int(8 * 9 * 64), 1024], stddev=0.1))
-		self.bias_fc1 = tf.Variable(tf.constant(0.1, shape=[1024]))
+		self.weights_fc1 = tf.Variable(tf.truncated_normal([int(8 * 9 * 64), 1024], stddev=0.1), name="weights_fc1")
+		self.bias_fc1 = tf.Variable(tf.constant(0.1, shape=[1024]), name="bias_fc1")
 
 		self.fc1 = tf.reshape(self.output_conv4, [-1, int(8 * 9 * 64)])
 
@@ -90,8 +90,8 @@ class Model():
 
 
 		# second fully connected layer, input 1024, output 12 which are the softmax probabilities
-		self.weights_softmax = tf.Variable(tf.truncated_normal([1024, 12], stddev=0.1))
-		self.bias_softmax = tf.Variable(tf.constant(0.1, shape=[12]))
+		self.weights_softmax = tf.Variable(tf.truncated_normal([1024, 12], stddev=0.1), name="weights_softmax")
+		self.bias_softmax = tf.Variable(tf.constant(0.1, shape=[12]), name="bias_softmax")
 
 		# the result
 		self.y_conv = tf.nn.softmax(tf.matmul(self.output_fc1, self.weights_softmax) + self.bias_softmax)
