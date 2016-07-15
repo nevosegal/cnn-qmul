@@ -7,7 +7,7 @@ import tensorflow as tf
 from dataloader import DataLoader
 import utils, os
 
-train_batch_size = 52
+train_batch_size = 64
 dataloader = DataLoader('dataset.h5', train_batch_size)
 
 model = Model(train_batch_size)

@@ -5,7 +5,7 @@ import tensorflow as tf
 import inspect_element
 import os
 
-test_batch_size = 64
+test_batch_size = 52
 dataloader = DataLoader('dataset.h5', test_batch_size, train=False)
 
 model = Model(test_batch_size)
@@ -22,7 +22,6 @@ if os.path.isfile('checkpoints/model.ckpt'):
 dataloader.reset_read_pointer()
 dataloader.randomize()
 dataset_size = dataloader.get_data_size()
-print dataset_size
 
 for i in range(dataset_size // dataloader.get_batch_size()):
     test_spectro_batch, test_labels_batch = dataloader.load_next_batch()
