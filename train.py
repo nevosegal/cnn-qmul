@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 train_batch_size = 64
 checkpoint_file = 'checkpoints/model.ckpt'
-# dataloader = DataLoader('dataset.h5', train_batch_size)
+dataloader = DataLoader('dataset.h5', train_batch_size)
 
 model = Model(train_batch_size)
 
