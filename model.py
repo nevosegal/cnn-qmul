@@ -59,9 +59,9 @@ class Model():
         self.conv3 = tf.nn.conv2d(self.output_conv2, self.weights_conv3, strides=[1, 1, 1, 1], padding="SAME")
 
         self.relu_conv3 = tf.nn.relu(self.conv3 + self.bias_conv3)
-        # self.dropout_conv3 = tf.nn.dropout(self.relu_conv3, self.keep_prob)
+        self.dropout_conv3 = tf.nn.dropout(self.relu_conv3, self.keep_prob)
 
-        self.output_conv3 = tf.nn.max_pool(self.relu_conv3, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
+        self.output_conv3 = tf.nn.max_pool(self.dropout_conv3, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
 
 
         # hidden layer 4
@@ -71,9 +71,9 @@ class Model():
         self.conv4 = tf.nn.conv2d(self.output_conv3, self.weights_conv4, strides=[1, 1, 1, 1], padding="SAME")
 
         self.relu_conv4 = tf.nn.relu(self.conv4 + self.bias_conv4)
-        # self.dropout_conv4 = tf.nn.dropout(self.relu_conv4, self.keep_prob)
+        self.dropout_conv4 = tf.nn.dropout(self.relu_conv4, self.keep_prob)
 
-        self.output_conv4 = tf.nn.max_pool(self.relu_conv4, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
+        self.output_conv4 = tf.nn.max_pool(self.dropout_conv4, strides=[1, 2, 2, 1], ksize=[1, 2, 2, 1], padding="SAME")
 
         
         # first fully connected layer
