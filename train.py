@@ -30,13 +30,13 @@ else:
     print("Training on random initial values...")
 
 print("Starting training:")
+dataset_size = dataloader.get_data_size()
 epochs = 30
 for j in range(epochs):
     dataloader.reset_read_pointer()
     dataloader.randomize()
-    dataset_size = dataloader.get_data_size()
-
     print("Epoch number: %d" % j)
+
     for i in range(dataset_size // dataloader.get_batch_size()):
         train_sepctro_batch, train_labels_batch = dataloader.load_next_batch()
         train_one_hot_batch = utils.generate_one_hot(train_labels_batch, dataloader.get_num_classes())

@@ -2,7 +2,6 @@ import utils
 from dataloader import DataLoader
 from model import Model
 import tensorflow as tf
-import inspect_element
 import os
 
 test_batch_size = 52
