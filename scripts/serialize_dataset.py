@@ -12,8 +12,8 @@ except ImportError:
 
 import h5py
 
-training_root = 'dataset/IRMAS-TrainingData/'
-testing_root = 'dataset/IRMAS-TestingData/'
+training_root = '../dataset/training/'
+testing_root = '../dataset/testing/'
 sr = 22050
 file_length = sr * 3
 
@@ -32,39 +32,42 @@ def merge_datasets(pickle_files, num_training, num_validation = 0):
 
     num_classes = len(pickle_files)
 
-    validation_dataset, validation_labels = make_arrays(num_validation, file_length)
+    # validation_dataset, validation_labels = make_arrays(num_validation, file_length)
     training_dataset, training_labels = make_arrays(num_training, file_length)
-    vsize_per_class = num_validation // num_classes
-    tsize_per_class = num_training // num_classes
+    # vsize_per_class = num_validation // num_classes
+    validation_dataset = 0
+    validation_labels = 0
 
-    vstart, tstart = 0, 0
-    vend, tend = vsize_per_class, tsize_per_class
-    end_l = vsize_per_class+tsize_per_class
+    tstart = 0
+    tend = 0
 
     for label, pickle_file in enumerate(pickle_files):
         try:
             with open(pickle_file, mode='rb') as f:
+
                 instrument_set = pickle.load(f)
 
+                print(instrument_set.shape)
+                # print(instrument_set)
+                tsize_per_class = len(instrument_set)
+                # print(tsize_per_class)
+                # print(tsize_per_class)
+                tend += tsize_per_class
+                print("tstart: %d" % tstart)
+                print("tend: %d" % tend)
                 # shuffling the data
                 np.random.shuffle(instrument_set)
-                if validation_dataset is not None:
-                    # store vsize_per_class number of validation data from a specific instrument class.
-                    validation_instrument = instrument_set[:vsize_per_class, :]
-                    # store this in the merged dataset, in the appropriate location.
-                    validation_dataset[vstart:vend, :] = validation_instrument
-                    validation_labels[vstart:vend] = label
-                    # increment the start and end positions for the next class.
-                    vstart += vsize_per_class
-                    vend += vsize_per_class
-
                 # store the rest in the training examples dataset
-                train_instrument = instrument_set[vsize_per_class:end_l, :]
+                # print(instrument_set[352:584])
+                train_instrument = instrument_set
                 training_dataset[tstart:tend, :] = train_instrument
+                # print(train_instrument.shape)
+                # print(label)
                 training_labels[tstart:tend] = label
+
                 # increment the start and end positions for the next class
                 tstart += tsize_per_class
-                tend += tsize_per_class
+                # tend += tsize_per_class
         except Exception as e:
             print("Cannot open file %s: %s" % (pickle_file, e))
 
@@ -169,38 +172,29 @@ def initialise_dataset():
         print("Pickling train datasets")
         test_datasets = pickle_dataset(test_data_folders)
 
-        num_train, num_test, num_valid = 14088, 1560, 300
+        num_train, num_test, num_valid = 1, 2708, 0
         # merge them to one big dataset
-        valid_dataset, valid_labels, train_dataset, train_labels = merge_datasets(train_datasets, num_train, num_valid)
+        # valid_dataset, valid_labels, train_dataset, train_labels = merge_datasets(train_datasets, num_train, num_valid)
+
+        print(test_datasets)
         _, _, test_dataset, test_labels = merge_datasets(test_datasets, num_test)
 
-        # randomize them
-        train_dataset, train_labels = randomize(train_dataset, train_labels)
-        test_dataset, test_labels = randomize(test_dataset, test_labels)
-        valid_dataset, valid_labels = randomize(valid_dataset, valid_labels)
-
-        print('Training:', train_dataset.shape, train_labels.shape)
-        print('Validation:', valid_dataset.shape, valid_labels.shape)
+        # print('Training:', train_dataset.shape, train_labels.shape)
+        # print('Validation:', valid_dataset.shape, valid_labels.shape)
         print('Testing:', test_dataset.shape, test_labels.shape)
 
-        train_spec_mat = generate_spec_mat(train_dataset, num_train)
+        # train_spec_mat = generate_spec_mat(train_dataset, num_train)
         test_spec_mat = generate_spec_mat(test_dataset, num_test)
-        valid_spec_mat = generate_spec_mat(valid_dataset, num_valid)
+        # valid_spec_mat = generate_spec_mat(valid_dataset, num_valid)
 
         # create a pickle of the merged datasets
         try:
             with h5py.File(hdf5_file, 'w') as f:
                 contents = {
-                    'train_spectros': train_spec_mat,
-                    'train_dataset': train_dataset,
-                    'train_labels': train_labels,
                     'test_spectros': test_spec_mat,
                     'test_dataset': test_dataset,
                     'test_labels': test_labels,
-                    'valid_spectros': valid_spec_mat,
-                    'valid_dataset': valid_dataset,
-                    'valid_labels': valid_labels,
-                    'num_classes': [len(train_data_folders)]
+                    'num_classes': [len(test_data_folders)]
                 }
 
                 for key, val in contents.iteritems():
@@ -221,3 +215,5 @@ def initialise_dataset():
         raise
 
     return contents
+
+initialise_dataset()
