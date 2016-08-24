@@ -1,4 +1,11 @@
 ## Musical instrument recognition using CNN
-An attempt to use convolutional neural networks to improve automatic instrument recognition both in monophonic and polyphonic signals.
+Automatic Musical Instrument Recognition using Convolutional Neural networks on solo instruments.
 
-Currently only using the [IRMAS](http://www.mtg.upf.edu/download/datasets/irmas) and the [MedleyDB](http://medleydb.weebly.com/) datasets but looking for more data.
+### Training
+In order to train the system, run `train.py`.
+
+### Testing
+In order to test the system, run `test.py`.
+
+
+For this to work a `dataset.h5` file is necessary. It is possible to serialize data using the `serialize_dataset.py` script.
