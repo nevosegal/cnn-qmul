@@ -1,4 +1,4 @@
-# Serialising and importing datasets
+# Serializing and importing datasets. Only used once to create the dataset file
 # based on the code from the Tensorflow tutorial
 
 import librosa as lr
@@ -12,12 +12,15 @@ except ImportError:
 
 import h5py
 
+# set training and testing data roots
 training_root = 'dataset/IRMAS-TrainingData/'
 testing_root = 'dataset/IRMAS-TestingData/'
+
+# set new sampling rate
 sr = 22050
 file_length = sr * 3
 
-
+# utility function to create new numpy arrays
 def make_arrays(num_rows, audio_length):
     if num_rows:
         data = np.ndarray(shape=(num_rows, audio_length), dtype=np.float32)
@@ -27,16 +30,20 @@ def make_arrays(num_rows, audio_length):
 
     return data, labels
 
-
+# a function that takes the pickled instruments and divides them to training and validation
 def merge_datasets(pickle_files, num_training, num_validation = 0):
 
     num_classes = len(pickle_files)
 
+    # generate arrays
     validation_dataset, validation_labels = make_arrays(num_validation, file_length)
     training_dataset, training_labels = make_arrays(num_training, file_length)
+
+    # compute size to take from each instrument
     vsize_per_class = num_validation // num_classes
     tsize_per_class = num_training // num_classes
 
+    # instantiate some variables
     vstart, tstart = 0, 0
     vend, tend = vsize_per_class, tsize_per_class
     end_l = vsize_per_class+tsize_per_class
@@ -75,11 +82,10 @@ def merge_datasets(pickle_files, num_training, num_validation = 0):
 def compute_spectrogram(signal):
     global sr
     spec = lr.feature.melspectrogram(signal, sr=sr, n_mels=128)
-    # log_spec = lr.logamplitude(spec, ref_power=np.max)
 
     return spec
 
-
+# create one big matrix that contains all of the spectrograms
 def generate_spec_mat(dataset, num_spec):
     spec_mat = np.zeros((num_spec, 128, 130), dtype=np.float32)
     for i, s in enumerate(dataset):
@@ -89,7 +95,6 @@ def generate_spec_mat(dataset, num_spec):
 
 
 def read_instrument(instrument_folder):
-
     # list of files in folder, ignoring hidden ones
     file_list = [f for f in os.listdir(instrument_folder) if not f.startswith('.')]
 
@@ -151,13 +156,13 @@ def initialise_dataset():
     contents = {}
 
     if not os.path.exists(hdf5_file):
-        # populate array with full path of each instrument folder
+        # populate array with full path of each training instrument folder
         train_data_folders = [
             training_root + folder for folder in os.listdir(training_root)
             if os.path.isdir(os.path.join(training_root, folder))
             ]
 
-        # populate array with full path of each instrument folder
+        # populate array with full path of each testing instrument folder
         test_data_folders = [
             testing_root + folder for folder in os.listdir(testing_root)
             if os.path.isdir(os.path.join(testing_root, folder))
@@ -174,20 +179,16 @@ def initialise_dataset():
         valid_dataset, valid_labels, train_dataset, train_labels = merge_datasets(train_datasets, num_train, num_valid)
         _, _, test_dataset, test_labels = merge_datasets(test_datasets, num_test)
 
-        # randomize them
-        train_dataset, train_labels = randomize(train_dataset, train_labels)
-        test_dataset, test_labels = randomize(test_dataset, test_labels)
-        valid_dataset, valid_labels = randomize(valid_dataset, valid_labels)
-
         print('Training:', train_dataset.shape, train_labels.shape)
         print('Validation:', valid_dataset.shape, valid_labels.shape)
         print('Testing:', test_dataset.shape, test_labels.shape)
 
+        # generate the spectrogram matrix for training, testing and validating
         train_spec_mat = generate_spec_mat(train_dataset, num_train)
         test_spec_mat = generate_spec_mat(test_dataset, num_test)
         valid_spec_mat = generate_spec_mat(valid_dataset, num_valid)
 
-        # create a pickle of the merged datasets
+        # create a hdf5 file of the merged datasets
         try:
             with h5py.File(hdf5_file, 'w') as f:
                 contents = {
@@ -204,13 +205,13 @@ def initialise_dataset():
                 }
 
                 for key, val in contents.iteritems():
-                    # pickle.dump(contents, f, pickle.HIGHEST_PROTOCOL)
                     f.create_dataset(key, data=val)
 
         except Exception as e:
             print("Unable to write to file", hdf5_file, ":", e)
             raise
 
+# read the newly created file and return it
     try:
         with h5py.File(hdf5_file, 'r') as f:
             for key in f.keys():

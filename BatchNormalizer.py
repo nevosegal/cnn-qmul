@@ -6,6 +6,8 @@ import tensorflow as tf
 class BatchNormalizer(object):
 
     def __init__(self, depth, epsilon, post_scale):
+
+        # create all of the variables
         self.mean = tf.Variable(tf.constant(0.0, shape=[depth]))
         self.variance = tf.Variable(tf.constant(1.0, shape=[depth]))
         self.beta = tf.Variable(tf.constant(0.0, shape=[depth]))
@@ -15,5 +17,6 @@ class BatchNormalizer(object):
 
     def normalize(self, x):
         mean, variance = tf.nn.moments(x, [0, 1, 2])
+        # create a normalised batch and return it
         x_normalized = tf.nn.batch_norm_with_global_normalization(x, mean, variance, self.beta, self.gamma, self.epsilon, self.post_scale)
         return x_normalized
