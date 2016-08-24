@@ -4,3 +4,4 @@ dataset.h5
 *.pyc
 .idea/
 checkpoints/
+.python-version
